@@ -1,0 +1,58 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+struct Item {
+    int weight;
+    int value;
+
+    // Constructor for convenient initialization
+    Item(int w, int v) : weight(w), value(v) {}
+};
+
+// Comparison function to sort items based on value-to-weight ratio in descending order
+bool compareItems(const Item& a, const Item& b) {
+    double ratioA = static_cast<double>(a.value) / a.weight;
+    double ratioB = static_cast<double>(b.value) / b.weight;
+    return ratioA > ratioB;
+}
+
+// Function to solve the Fractional Knapsack problem using a greedy approach
+double fractionalKnapsack(int capacity, const std::vector<Item>& items) {
+    // Sort items based on value-to-weight ratio in descending order
+    std::sort(items.begin(), items.end(), compareItems);
+
+    double totalValue = 0.0;
+    int remainingCapacity = capacity;
+
+    // Iterate through the sorted items
+    for (const Item& item : items) {
+        // Check if the entire item can be included
+        if (remainingCapacity >= item.weight) {
+            totalValue += item.value;
+            remainingCapacity -= item.weight;
+        } else {
+            // Include a fraction of the item to fill the remaining capacity
+            totalValue += (static_cast<double>(item.value) / item.weight) * remainingCapacity;
+            break;
+        }
+    }
+
+    return totalValue;
+}
+
+int main() {
+    std::vector<Item> items = {
+        {10, 60},
+        {20, 100},
+        {30, 120}
+    };
+
+    int capacity = 50;
+
+    double maxValue = fractionalKnapsack(capacity, items);
+
+    std::cout << "Maximum value in Knapsack = " << maxValue << std::endl;
+
+    return 0;
+}

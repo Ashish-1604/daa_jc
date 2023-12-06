@@ -1,0 +1,48 @@
+#include <iostream>
+#include <vector>
+
+struct Item {
+    int weight;
+    int value;
+};
+
+int max(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+// Backtracking function to find the maximum value that can be obtained
+int knapsackBacktrack(int capacity, const std::vector<Item>& items, int n, int currentIndex) {
+    // Base case: if we have considered all items or the knapsack is full
+    if (currentIndex == n || capacity == 0) {
+        return 0;
+    }
+
+    // If the weight of the current item exceeds the remaining capacity, skip it
+    if (items[currentIndex].weight > capacity) {
+        return knapsackBacktrack(capacity, items, n, currentIndex + 1);
+    }
+
+    // Consider two cases: include the current item or exclude it
+    int includeCurrent = items[currentIndex].value +
+                         knapsackBacktrack(capacity - items[currentIndex].weight, items, n, currentIndex + 1);
+    int excludeCurrent = knapsackBacktrack(capacity, items, n, currentIndex + 1);
+
+    // Return the maximum value obtained by including or excluding the current item
+    return max(includeCurrent, excludeCurrent);
+}
+
+int main() {
+    int capacity = 50;
+    std::vector<Item> items = {
+        {10, 60},
+        {20, 100},
+        {30, 120}
+    };
+
+    int n = items.size();
+    int maxValue = knapsackBacktrack(capacity, items, n, 0);
+
+    std::cout << "Maximum value in Knapsack = " << maxValue << std::endl;
+
+    return 0;
+}
